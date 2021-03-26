@@ -106,6 +106,9 @@ pub struct LaunchOptions<'a> {
     /// Passes value through to std::process::Command::envs.
     #[builder(default = "None")]
     pub process_envs: Option<HashMap<String, String>>,
+    
+    #[builder(default = "None")]
+    pub user_data_dir: Option<&'a std::path::Path>,
 }
 
 impl<'a> LaunchOptions<'a> {
@@ -216,7 +219,7 @@ impl Process {
         let user_data_dir = ::tempfile::Builder::new()
             .prefix("rust-headless-chrome-profile")
             .tempdir()?;
-        let data_dir_option = format!("--user-data-dir={}", user_data_dir.path().to_str().unwrap());
+        let data_dir_option = format!("--user-data-dir={}", launch_options.user_data_dir.unwrap_or(user_data_dir.path()).to_str().unwrap());
 
         trace!("Chrome will have profile: {}", data_dir_option);
 
